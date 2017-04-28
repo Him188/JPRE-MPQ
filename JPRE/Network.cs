@@ -93,7 +93,7 @@ namespace JPRE.xx
                 while (_temp.Length != 0)
                 {
                     var position = Utils.ArraySearch(_temp, Protocol.Signature);
-                    if (position == -1)
+                    if (position <0)
                     {
                         return; //收到的是子包, 数据未结尾
                     }
