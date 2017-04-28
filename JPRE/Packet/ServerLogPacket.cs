@@ -21,7 +21,7 @@
 
         public override byte GetNetworkId()
         {
-            return PacketId.ServerLog;
+            return Protocol.ServerLog;
         }
     }
 }

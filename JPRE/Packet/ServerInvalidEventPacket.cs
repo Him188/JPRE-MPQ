@@ -18,7 +18,7 @@
 
         public override byte GetNetworkId()
         {
-            return PacketId.ServerInvalidEvent;
+            return Protocol.ServerInvalidEvent;
         }
     }
 }

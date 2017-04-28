@@ -30,7 +30,7 @@
 
         public override byte GetNetworkId()
         {
-            return PacketId.ServerCommand;
+            return Protocol.ServerCommand;
         }
     }
 }

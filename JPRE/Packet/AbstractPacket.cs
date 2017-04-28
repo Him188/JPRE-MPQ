@@ -6,15 +6,15 @@ namespace JPRE.xx.Packet
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public abstract class AbstractPacket : BinaryStream
     {
-        public AbstractPacket(BinaryStream unpack) : base(unpack)
+        protected AbstractPacket(BinaryStream unpack) : base(unpack)
         {
         }
 
-        public AbstractPacket() : this(new byte[] { })
+        protected AbstractPacket() : this(new byte[] { })
         {
         }
 
-        public AbstractPacket(byte[] data) : base(data)
+        protected AbstractPacket(byte[] data) : base(data)
         {
         }
 
@@ -39,8 +39,6 @@ namespace JPRE.xx.Packet
 
         public abstract byte GetNetworkId();
 
-        public const byte NetworkId = 0;
-
         public static byte GetNetworkId(AbstractPacket packet)
         {
             return GetNetworkId(packet.GetType());
@@ -55,8 +53,8 @@ namespace JPRE.xx.Packet
 
         public static void InitPacket()
         {
-            Packets = new Type[32];
-            PacketIds = new byte[32];
+            _packets = new Type[32];
+            _packetIds = new byte[32];
             _packetsCount = 0;
 
             try
@@ -83,9 +81,9 @@ namespace JPRE.xx.Packet
             }
         }
 
-        private static Type[] Packets;
+        private static Type[] _packets;
 
-        private static byte[] PacketIds;
+        private static byte[] _packetIds;
 
         private static int _packetsCount;
 
@@ -103,36 +101,36 @@ namespace JPRE.xx.Packet
                 {
                     var name = type.Name.Substring(0, type.Name.Length - "Packet".Length);
 
-                    var values = typeof(PacketId).GetFields();
+                    var values = typeof(Protocol).GetFields();
                     foreach (var value in values)
                     {
                         if (!value.Name.Equals(name)) continue;
-                        PacketIds[_packetsCount] = (byte) value.GetValue(null);
+                        _packetIds[_packetsCount] = (byte) value.GetValue(null);
                         break;
                     }
                 }
 
-                if (PacketIds[_packetsCount] == 0)
+                if (_packetIds[_packetsCount] == 0)
                 {
-                    PacketIds[_packetsCount] = (byte) type.GetField("NETWORK_ID").GetValue(null);
+                    _packetIds[_packetsCount] = (byte) type.GetField("NETWORK_ID").GetValue(null);
                 }
-                Packets[_packetsCount++] = type;
+
+                _packets[_packetsCount++] = type;
             }
             catch (Exception e)
             {
                 MApi.Api_OutPut(e.ToString());
-                throw;
             }
         }
 
         public static Type[] GetPackets()
         {
-            return Packets;
+            return _packets;
         }
 
         public static byte[] GetPacketIds()
         {
-            return PacketIds;
+            return _packetIds;
         }
 
         public static int GetPacketsCount()
@@ -142,11 +140,10 @@ namespace JPRE.xx.Packet
 
         public static AbstractPacket MatchPacket(byte id)
         {
-            for (var i = 0; i < PacketIds.Length; i++)
+            for (var i = 0; i < _packetIds.Length; i++)
             {
-                if (PacketIds[i] != id) continue;
-                var constructor = Packets[i].GetConstructor(new Type[0]);
-                if (constructor != null) return (AbstractPacket) constructor.Invoke(new object[0]);
+                if (_packetIds[i] != id) continue;
+                return (AbstractPacket) Activator.CreateInstance(_packets[i]);
             }
             return null;
         }

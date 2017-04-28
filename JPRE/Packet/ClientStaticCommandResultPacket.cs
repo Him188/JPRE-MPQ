@@ -24,7 +24,7 @@
 
         public override byte GetNetworkId()
         {
-            return PacketId.ClientStaticCommandResult;
+            return Protocol.ClientStaticCommandResult;
         }
     }
 }

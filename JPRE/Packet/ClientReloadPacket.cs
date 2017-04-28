@@ -15,7 +15,7 @@
 
         public override byte GetNetworkId()
         {
-            return PacketId.ClientReload;
+            return Protocol.ClientReload;
         }
     }
 }

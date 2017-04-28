@@ -15,7 +15,7 @@
 
         public override byte GetNetworkId()
         {
-            return PacketId.ClientPing;
+            return Protocol.ClientPing;
         }
     }
 }

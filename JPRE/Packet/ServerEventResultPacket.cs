@@ -2,12 +2,7 @@
 {
     public sealed class ServerEventResultPacket : AbstractPacket
     {
-        public readonly object _result;
-
-        public ServerEventResultPacket(object result)
-        {
-            _result = result;
-        }
+        public object Result;
 
         public override void Encode()
         {
@@ -21,12 +16,12 @@
             }
             SetEncoded(false);
 
-            PutRaw(_result);
+            Result = GetRaw();
         }
 
         public override byte GetNetworkId()
         {
-            return PacketId.ServerEventResult;
+            return Protocol.ServerEventResult;
         }
     }
 }

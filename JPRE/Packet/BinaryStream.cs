@@ -251,7 +251,7 @@ namespace JPRE.xx.Packet
 
         public byte[] GetBytes(int length)
         {
-            byte[] result = GetCenter(_location, length);
+            var result = GetCenter(_location, length);
 
             _location += length;
             return result;

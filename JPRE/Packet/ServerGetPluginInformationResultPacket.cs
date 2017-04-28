@@ -18,7 +18,7 @@
 
         public override byte GetNetworkId()
         {
-            return PacketId.ServerGetPluginInformationResult;
+            return Protocol.ServerGetPluginInformationResult;
         }
     }
 }

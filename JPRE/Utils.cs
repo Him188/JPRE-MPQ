@@ -27,7 +27,7 @@ namespace JPRE.xx
             loop:
             while (true)
             {
-                found = Array.BinarySearch(array, search[0]);
+                found = BinarySearch(array, search[0]);
                 for (var i = 1; i < search.Length; i++)
                 {
                     try
@@ -46,6 +46,18 @@ namespace JPRE.xx
             }
 
             return found;
+        }
+
+        public static int BinarySearch(byte[] a, byte key)
+        {
+            for (var i = 0; i < a.Length; i++)
+            {
+                if (a[i] == key)
+                {
+                    return i;
+                }
+            }
+            return - a.Length;
         }
 
         public static byte[] ArrayGetCenter(byte[] array, int location, int length)
@@ -70,8 +82,20 @@ namespace JPRE.xx
         public static byte[] ArrayDelete(byte[] array, int length)
         {
             var newArray = new byte[array.Length - length];
-            Array.Copy(array, 0, newArray, 0, array.Length - length);
+            Array.Copy(array, length-1, newArray, 0, array.Length - length);
             return newArray;
+        }
+
+        public static bool IsZeroArray(byte[] array)
+        {
+            foreach (var b in array)
+            {
+                if (b != 0)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

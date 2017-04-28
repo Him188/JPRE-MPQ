@@ -57,7 +57,7 @@
     <Compile Include="Packet\ClientReloadPacket.cs" />
     <Compile Include="Packet\ClientStaticCommandResultPacket.cs" />
     <Compile Include="Packet\CommandId.cs" />
-    <Compile Include="Packet\PacketId.cs" />
+    <Compile Include="Packet\Protocol.cs" />
     <Compile Include="Packet\ServerCommandPacket.cs" />
     <Compile Include="Packet\ServerEventResultPacket.cs" />
     <Compile Include="Packet\ServerGetPluginInformationResultPacket.cs" />

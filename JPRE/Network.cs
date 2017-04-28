@@ -57,7 +57,7 @@ namespace JPRE.xx
                         {
                             MApi.Api_OutPut(e.ToString());
                             MApi.Api_OutPut("接受数据线程发生了异常, 一上为错误信息");
-                            throw;
+
                         }
                     }
                 });
@@ -75,7 +75,6 @@ namespace JPRE.xx
 
         private byte[] _temp = new byte[0];
 
-        private static readonly byte[] Signature = {127, 127, 127, 127};
 
         /// <summary>
         /// 接受到客户端数据后的分包/合包/处理过程
@@ -93,7 +92,7 @@ namespace JPRE.xx
                 _temp = Utils.ConcatArray(_temp, data);
                 while (_temp.Length != 0)
                 {
-                    var position = Utils.ArraySearch(_temp, Signature);
+                    var position = Utils.ArraySearch(_temp, Protocol.Signature);
                     if (position == -1)
                     {
                         return; //收到的是子包, 数据未结尾
@@ -107,12 +106,16 @@ namespace JPRE.xx
             catch (Exception e)
             {
                 MApi.Api_OutPut(e.ToString());
-                throw;
+
             }
         }
 
         private void ProcessPacket(byte[] data)
         {
+            if (Utils.IsZeroArray(data))
+            {
+                return;
+            }
             ProcessPacket(new BinaryStream(data));
         }
 
@@ -127,11 +130,14 @@ namespace JPRE.xx
                 {
                     return;
                 }
+                pk.SetData(stream.GetLast());
+                pk.SetEncoded(true);
+
                 pk.Decode();
 
                 switch (pk.GetNetworkId())
                 {
-                    case PacketId.ServerCommand:
+                    case Protocol.ServerCommand:
                         var commandPacket = (ServerCommandPacket) pk;
 
                         foreach (var methodInfo in typeof(MApi).GetMethods())
@@ -145,14 +151,14 @@ namespace JPRE.xx
                         SendPacket(new ClientCommandResultPacket(""));
                         return;
 
-                    case PacketId.ServerInvalidId: //packet id
+                    case Protocol.ServerInvalidId: //packet id
                         return;
 
-                    case PacketId.ServerGetPluginInformationResult:
+                    case Protocol.ServerGetPluginInformationResult:
                         //TODO
                         return;
 
-                    case PacketId.ServerLog:
+                    case Protocol.ServerLog:
                         var logPacket = (ServerLogPacket) pk;
 
                         var strings = logPacket.Log.Split("||".ToCharArray(), 3);
@@ -160,11 +166,11 @@ namespace JPRE.xx
                         MApi.Api_OutPut("[" + strings[1] + "] " + strings[2]);
                         return;
 
-                    case PacketId.ServerPong:
+                    case Protocol.ServerPong:
                         //TODO
                         return;
 
-                    case PacketId.ServerStaticCommand:
+                    case Protocol.ServerStaticCommand:
                         var sCommandPacket = (ServerStaticCommandPacket) pk;
 
                         var args = new object[sCommandPacket.Args.Length - 1];
@@ -181,13 +187,13 @@ namespace JPRE.xx
                         SendPacket(new ClientStaticCommandResultPacket(""));
                         return;
 
-                    case PacketId.ServerEventResult:
+                    case Protocol.ServerEventResult:
                         var serverEventResultPacket = pk as ServerEventResultPacket;
                         if (serverEventResultPacket != null)
-                            Core.Results.Enqueue(serverEventResultPacket._result);
+                            Core.Results.Enqueue(serverEventResultPacket.Result);
                         return;
 
-                    case PacketId.ServerInvalidEvent:
+                    case Protocol.ServerInvalidEvent:
                         Core.Results.Enqueue("");
 
                         return;
@@ -217,6 +223,7 @@ namespace JPRE.xx
                 var result = new byte[data.Length + 1]; //数据包ID
                 result[0] = packet.GetNetworkId();
                 Array.Copy(data, 0, result, 1, data.Length);
+                result = Utils.ConcatArray(result, Protocol.Signature);
                 _client.Send(result);
                 MApi.Api_OutPut("[Network] 数据包已发送:" + packet + ", 数据为: " + Utils.ArrayToString(result));
             }

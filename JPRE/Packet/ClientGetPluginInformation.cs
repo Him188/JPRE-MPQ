@@ -23,7 +23,7 @@
 
         public override byte GetNetworkId()
         {
-            return PacketId.ClientGetPluginInformation;
+            return Protocol.ClientGetPluginInformation;
         }
     }
 }

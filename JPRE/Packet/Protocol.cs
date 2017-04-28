@@ -1,7 +1,9 @@
 ﻿namespace JPRE.xx.Packet
 {
-    public static class PacketId
+    public static class Protocol
     {
+        public static readonly byte[] Signature = {127, 127, 127, 127};
+
         public const byte ClientReload = 1;
         public const byte ClientPing = 2;
         public const byte ClientEvent = 3;
